@@ -32,15 +32,17 @@ jobs:
           cmake-version: "3.17.x"
       - name: Use cmake
         run: cmake --version
+      
+      - name: Checkout Pico SDK
+        uses: actions/checkout@v4
+        with:
+          repository: raspberrypi/pico-sdk
+          path: pico-sdk
+          ref: 2.1.0
+          submodules: recursive
 
-      - name: Clone Pico SDK
-        run: |
-          git clone -b master https://github.com/raspberrypi/pico-sdk.git
-          cd pico-sdk
-          git submodule update --init --recursive
-
-      - name: Set PICO_SDK_PATH
-        run: echo "PICO_SDK_PATH=$(pwd)/pico-sdk" >> $GITHUB_ENV
+      - name: Set SDK path
+        run: echo "PICO_SDK_PATH=$GITHUB_WORKSPACE/pico-sdk" >> $GITHUB_ENV
 
       - name: Build Firmware
         run: |
@@ -52,6 +54,6 @@ jobs:
         uses: softprops/action-gh-release@v2
         with:
           files: |
-            build/ble-adapter.uf2
+            build/pico_ble_keyboard_adapter.uf2
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
